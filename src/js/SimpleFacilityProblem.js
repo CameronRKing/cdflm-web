@@ -27,12 +27,15 @@ const SIMPLE_COST_MATRIX = [
 // i.e., a combination max/min, an aggregate function, and a measure
 // e.g., MINIMIZE MAX STAR or MAXIMIZE MIN RADIUS
 class SimpleFacilityProblem {    
-    constructor() {
-        this.objective = OBJECTIVES.MIN;
-        this.aggregate = AGGREGATES.MAX;
-        this.measure = MEASURES.STAR;
-        this.costs = SIMPLE_COST_MATRIX;
-        this.numFacilities = 2;
+    constructor(attrs) {
+        if (!attrs) {
+            attrs = {};
+        }
+        this.objective = attrs.objective || OBJECTIVES.MIN;
+        this.aggregate = attrs.aggregate || AGGREGATES.MAX;
+        this.measure = attrs.measure || MEASURES.STAR;
+        this.costs = attrs.costs || SIMPLE_COST_MATRIX;
+        this.numFacilities = attrs.numFacilities || 2;
     }
 
     get problemName() {
