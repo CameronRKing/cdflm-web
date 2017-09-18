@@ -1,0 +1,15 @@
+{
+  "name": "cdflm-web",
+  "version": "1.0.0",
+  "description": "CDFLM for the web",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape ./js/tests/**/*.spec.js"
+  },
+  "author": "Cameron King",
+  "license": "ISC",
+  "devDependencies": {
+    "sinon": "^3.2.1",
+    "tape": "^4.8.0"
+  }
+}
