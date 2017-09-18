@@ -17,10 +17,6 @@ module.exports = {
                         presets: ['env']
                     }
                 }
-            },
-            {
-              test: /\.json$/,
-              loader: 'json-loader'
             }
         ]
     }
