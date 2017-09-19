@@ -153,7 +153,7 @@ void ALNS::gridSearch(float lower, float upper, float step, void (ALNS::*setter)
         cout << "param: " << param << endl;
         for (int i = 0; i < 5; i++) {
             cout << "    running " << i << endl;
-            this->listener->handleAlgorithm(this, this->data.name, this->data.type, this->data.objType);
+            this->listener->handleAlgorithm(this, this->data.name, this->data.type);
             ProblemResults results = this->optimize(this->data);
             this->listener->handleResults(results);
             sumObjectives += results.objective;
@@ -163,7 +163,7 @@ void ALNS::gridSearch(float lower, float upper, float step, void (ALNS::*setter)
     }
 
     // the parameter value associated with that average is now the official value
-    Comparator comparator(this->data.objType);
+    Comparator comparator(this->data.type.objective);
     pair<float, float> best = *min_element(avgObjectives.begin(), avgObjectives.end(),
                                 [&](pair<float, float> a, pair<float, float>b) {
                                     return comparator(a.second, b.second);
@@ -185,7 +185,7 @@ void ALNS::gridSearch(float lower, float upper, float step, void (ALNS::*setter)
 ProblemResults ALNS::optimize(ProblemData data) {
     clock_t begin = clock();
     this->data = data;
-    this->comparator.setType(data.objType);
+    this->comparator.setType(data.type.objective);
     int outcome;
     float score;
     FuncPair funcs;
@@ -244,7 +244,6 @@ ProblemResults ALNS::optimize(ProblemData data) {
                                bestSolution.facilities,
                                bestSolution.customerAssignments,
                                data.type,
-                               data.objType
                            }; 
     return results;
 }

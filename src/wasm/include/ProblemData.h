@@ -12,19 +12,15 @@ using namespace std;
 struct ProblemData {
     string name;
     ProblemType type;
-    ObjectiveType objType;
     int numFacilities;
     int numCustomers;
     vector<vector<int>> costs;
     vector<vector<int>> demand;
 
     /**
-     * Conditional logic for calculating appropriate objective
-     * based on problem type.
+     * Calculates objective value for given customer assignments
      *
-     * @param const vector<vector<int>> costs,
-     * @param const vector<int> customerAssignments,
-     * @param const ProblemType problemType)
+     * @param const vector<int> assignments,
      * @return int objective
      **/
     int calcObjective(const vector<int> assignments) {
@@ -33,18 +29,12 @@ struct ProblemData {
     }
 
     map<int, int> getMeasures(const vector<int> assignments) {
-        switch (this->type) {
-            case MAX_STAR:
-            case MIN_STAR:
-            case SUM_STAR:
+        switch (this->type.measure) {
+            case STAR:
                 return this->calcStars(assignments);
-            case MAX_RADIUS:
-            case MIN_RADIUS:
-            case SUM_RADIUS:
+            case RADIUS:
                 return this->calcRadii(assignments);
-            case MAX_RAY:
-            case MIN_RAY:
-            case SUM_RAY:
+            case RAY:
                 return this->calcRays(assignments);
             default:
                 throw "Unsupported problem type!";
@@ -52,18 +42,12 @@ struct ProblemData {
     }
 
     int getAggregate(const map<int, int> measures) {
-        switch (this->type) {
-            case MAX_STAR:
-            case MAX_RADIUS:
-            case MAX_RAY:
+        switch (this->type.aggregate) {
+            case MAX:
                 return this->getMax(measures);
-            case MIN_STAR:
-            case MIN_RADIUS:
-            case MIN_RAY:
+            case MIN:
                 return this->getMin(measures);
-            case SUM_STAR:
-            case SUM_RADIUS:
-            case SUM_RAY:
+            case SUM:
                 return this->getSum(measures);
             default:
                 throw "Unsupported problem type!";

@@ -94,7 +94,7 @@ string NDPSO::getJSONParameters() {
 ProblemResults NDPSO::optimize(ProblemData data) {
     // initial setup
     this->data = data;
-    this->comparator.setType(data.objType);
+    this->comparator.setType(data.type.objective);
     this->initSwarm();
     Particle gBest = getGlobalBest();   // global best; across current iteration
     Particle uBest = gBest;             // universal best; across all iterations
@@ -125,7 +125,6 @@ ProblemResults NDPSO::optimize(ProblemData data) {
                                uBest.position,
                                uBest.getCustomerAssignments(),  // customer assignments are calculated deterministically
                                data.type,                       // we don't save them in order to optimize space, but we can recalculate them
-                               data.objType
                            };                                   
     return results;
 }
@@ -136,14 +135,13 @@ ProblemResults NDPSO::optimize(ProblemData data) {
  **/
 Particle NDPSO::getGlobalBest() {
     minFitness func;
-    switch (this->data.objType) {
+    switch (this->data.type.objective) {
         case MINIMIZE:
             return *min_element(this->swarm.begin(), this->swarm.end(), func);
         case MAXIMIZE:
             return *max_element(this->swarm.begin(), this->swarm.end(), func);
         default:
             throw "NDPSO::getGlobalBest(): unrecognized this->data.objType!";
- 
     }
 }
 

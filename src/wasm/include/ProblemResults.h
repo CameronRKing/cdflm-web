@@ -15,7 +15,6 @@ struct ProblemResults {
     vector<int> facilities;             // which facilities are currently open?
     vector<int> customerAssignments;    // to which facility is a customer assigned?
     ProblemType type;
-    ObjectiveType objType;
 
     /* functions */
     string getJSONFacilities() {

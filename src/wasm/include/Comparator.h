@@ -4,12 +4,12 @@
 #include "defs.h"
 
 // a class to hide whether we are minimizing or maximizing the objective
-// gets passed an ObjectiveType to make the distinction
+// gets passed an Objective to make the distinction
 class Comparator {
 public:
-    Comparator(ObjectiveType type=MINIMIZE) { this->type = type; }
-    void setType(ObjectiveType type) { this->type = type; }
-    ObjectiveType getType() { return this->type; }
+    Comparator(Objective type=MINIMIZE) { this->type = type; }
+    void setType(Objective type) { this->type = type; }
+    Objective getType() { return this->type; }
     
     // this function returns true iff the first argument
     // is better than the second argument dependent on the objective type
@@ -37,7 +37,7 @@ public:
         }
     }
 private:
-    ObjectiveType type;
+    Objective type;
 };
 
 #endif

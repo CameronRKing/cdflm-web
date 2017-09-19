@@ -122,8 +122,7 @@ ProblemData Utils::parseORLIB(string filename) {
     infile.close();
 
     // default values
-    data.type = MAX_STAR;
-    data.objType = MINIMIZE;
+    data.type = { MINIMIZE, MAX, STAR };
     return data;
 }
 
@@ -191,8 +190,7 @@ ProblemData Utils::parseDaskin(string filename) {
     infile.close();
 
     // default values
-    data.type = MAX_STAR;
-    data.objType = MINIMIZE;
+    data.type = { MINIMIZE, MAX, STAR };
     data.numFacilities = 5;
     return data;
 }
@@ -247,34 +245,3 @@ void Utils::printVector(const vector<int>& vect) {
     }
     cout << endl;
 }
-
-
-/**
- * Runs the given algorithm on the given data set for each problem type that we have
- * Logs results to the database
- *
- * @preconditions: assumes that MAX_STAR is the first ProblemType, and MIN_RAY the last
- *                 assumes that MINIMIZE is the last ObjectiveType, and MAXIMIZE the first
- *
- * @param Algorithm* alg
- * @param const ProblemData data
- * @return void
- **/
-void Utils::optimizeForEachProblemType(Algorithm* alg, ProblemData data) {
-    ProblemResults results;
-    Listener* listener = alg->getListener();
-    cout << alg->getName() << endl;
-    data.objType = MINIMIZE;
-
-    ProblemType types[4] = { SUM_STAR, MAX_RADIUS, MAX_STAR, SUM_RADIUS };
-    for (int type = 0; type < 4; type++) {
-        data.type = types[type];
-        // run the problem ten times so we can take the best later
-        for (int ii = 0; ii < 10; ii++) {
-            listener->handleAlgorithm(alg, data.name, data.type, data.objType);
-            results = alg->optimize(data);
-            listener->handleResults(results);
-        }
-    }
-}
-
