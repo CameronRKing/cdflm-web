@@ -10,7 +10,6 @@
 #include "Utils.h"
 #include "Particle.h"
 #include "ObjectiveStrategy.h"
-#include "AssignmentStrategy.h"
 using namespace std;
 
 /* functional object for getGlobalBest() && getGlobalWorst() */
@@ -87,36 +86,6 @@ string NDPSO::getJSONParameters() {
 }
 
 /**
- * Runs through 125 parameter sets, 10 trials each.
- * Data is meant to be saved and analyzed with Python scripts
- * This object will NOT have the optimal parameter set
- * when this function is finished!
- *
- * @param const ProblemData data
- * @return void
- **/
-void NDPSO::searchParameters(const ProblemData data) {
-    ProblemResults results;
-    int done = 0;
-    for (float c1 = 0.1; c1 <= 0.9; c1 += 0.2) {
-        this->setInertia(c1);
-        for (float c2 = 0.1; c2 <= 0.9; c2 += 0.2) {
-            this->setCognitive(c2);
-            for (float c3 = 0.1; c3 <= 0.9; c3 += 0.2) {
-                this->setSocial(c3);
-                for (int i = 0; i < 10; i++) {
-                    this->listener->handleAlgorithm(this, data.name, data.type, data.objType);
-                    results = this->optimize(data);
-                    this->listener->handleResults(results);
-                    ++done;
-                }
-                cout << done << " done" << endl;
-            }
-        }
-    }
-}
-
-/**
  * Optimizes a given problem
  * initializes swarm
  *  todo: log intermediate steps to a logfile (database table?)
@@ -186,7 +155,7 @@ Particle NDPSO::getGlobalBest() {
  * @return int objective value for the problem type
  **/
 int NDPSO::calcObjective(const vector<int>& facilities) {
-    vector<int> customerAssignments = AssignmentStrategy::assign(this->data.costs, facilities, this->data.type);
+    vector<int> customerAssignments = this->data.assignCustomers(facilities);
     return ObjectiveStrategy::calcObjective(this->data.costs, customerAssignments, this->data.type);
 }
 

@@ -1,7 +1,6 @@
 #include "Particle.h"
 #include "NDPSO.h"
 #include "Utils.h"
-#include "AssignmentStrategy.h"
 
 #include <map>
 #include <limits>
@@ -115,8 +114,7 @@ vector<int> Particle::exchange(const vector<int>& pos) {
  * @return: vector of customer assignements. Index represents customer number, the value represents the facility
  **/
 vector<int> Particle::getCustomerAssignments() {
-
-    return AssignmentStrategy::assign((ndpso->data).costs, this->position, (ndpso->data).type);
+    return (ndpso->data).assignCustomers(this->position);
 }
 
 /**

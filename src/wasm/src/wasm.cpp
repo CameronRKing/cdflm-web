@@ -5,7 +5,6 @@
 // Even though I never directly reference the next three classes,
 // the EMSDK wants them explicitly bound or else it throws a fit during runtime
 #include "../include/ObjectiveStrategy.cpp"
-#include "../include/AssignmentStrategy.cpp"
 #include "../include/Particle.cpp"
 #include "../include/Listener.h"
 #include "../include/NDPSO.cpp"
@@ -42,7 +41,7 @@ public:
 
 build command (until I get the EMSDK in the Docker container and thus can add an entry to the makefile; run from Default directory):
 
-emcc --bind -s WASM=1 -O2 --std=c++11 --preload-file ../storage/testCases -o cdflm.js ../src/wasm.cpp
+emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -O3 --std=c++11 --preload-file ../storage/testCases -o cdflm.js ../src/wasm.cpp
 
 */
 
@@ -96,9 +95,6 @@ EMSCRIPTEN_BINDINGS(cdflm_cpp) {
 
     class_<ObjectiveStrategy>("ObjectiveStrategy")
         .class_function("calcObjective", &ObjectiveStrategy::calcObjective);
-
-    class_<AssignmentStrategy>("AssignmentStrategy")
-        .class_function("assign", &AssignmentStrategy::assign);
 
     class_<Listener>("Listener")
         .function("handleAlgorithm", &Listener::handleAlgorithm, pure_virtual(), allow_raw_pointers())

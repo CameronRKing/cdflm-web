@@ -23,7 +23,6 @@ public:
     ALNS();                    // what constructors might I need? What would I want to pass in?
     ~ALNS();
     ProblemResults optimize(ProblemData);
-    void searchParameters(const ProblemData);
     string getName() { return "ALNS"; }
     string getJSONParameters();
 

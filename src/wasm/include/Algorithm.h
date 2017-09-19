@@ -19,7 +19,6 @@ class Algorithm {
 public:
     virtual ~Algorithm() {};
     virtual ProblemResults optimize(ProblemData) = 0;
-    virtual void searchParameters(const ProblemData) = 0;
     // should remove these calls entirely, I think
     virtual int calcObjective(const vector<int>& customerAssignments) { 
         return ObjectiveStrategy::calcObjective(this->data.costs, customerAssignments, this->data.type); 

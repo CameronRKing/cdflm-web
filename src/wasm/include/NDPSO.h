@@ -29,7 +29,6 @@ public:
     ProblemResults optimize(ProblemData) override;
     string getName() override { return "NDPSO"; };
     string getJSONParameters() override;
-    void searchParameters(const ProblemData) override;
     void setInertia(float c1) { this->inertia = c1; this->initialInertia = c1; }
     void setSocial(float c2) { this->social = c2; }
     void setCognitive(float c3) { this->cognitive = c3; }

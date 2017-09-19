@@ -130,26 +130,6 @@ void ALNS::calcStartingTemp(ALNSSolution initial) {
 }
 
 /**
- * Performs a grid search to optimize parameters
- * The data is meant to be saved and analyzed in Python;
- * This object WILL have the optimal parameter set
- * when this function is done running, as opposed to NDPSO, which will not
- *
- * @param const ProblemData data
- * @return void
- **/
-void ALNS::searchParameters(const ProblemData data) {
-    this->data = data;
-    this->gridSearch(0.05, 0.50, 0.05, &ALNS::setStartTempCtrl);
-    this->gridSearch(0.9995, 0.9999, 0.00005, &ALNS::setCoolingFactor);
-    this->gridSearch(0.1, 0.9, 0.1, &ALNS::setReactionFactor);
-    this->gridSearch(3.0, 33.0, 3.0, &ALNS::setNewBestReward);
-    this->gridSearch(3.0, 33.0, 3.0, &ALNS::setAcceptedBetterReward);
-    this->gridSearch(3.0, 33.0, 3.0, &ALNS::setAcceptedWorseReward);
-    cout << this->getJSONParameters() << endl;
-}
-
-/**
  * Performs a grid search for a parameter using a given setter
  * Runs each parameter set five times on this->data and saves the average objective
  * Takes the best average and sets it as the value of the parameter
