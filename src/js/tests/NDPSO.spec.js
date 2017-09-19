@@ -3,12 +3,11 @@ const sinon = require('sinon');
 const NDPSO = require('../NDPSO.js');
 const {SimpleFacilityProblem} = require('../SimpleFacilityProblem.js');
 
-test('constructor initializes parameters to optimal defaults', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+test('constructor initializes parameters to optimal defaults and does not initialize swarm', function(t) {
+  const n = new NDPSO();
   t.equal(n.social, 0.7);
   t.equal(n.cognitive, 0.7);
   t.equal(n.inertia, 0.7);
-  t.equal(n.inertialDiscount, 0.9995);
   t.equal(n.swarmSize, 100);
   t.equal(n.maxIterations, 1000);
   t.looseEqual(n.swarm, []);
@@ -16,7 +15,8 @@ test('constructor initializes parameters to optimal defaults', function(t) {
 });
 
 test('getRandomPosition() returns an array with problem.numFacilities members each of which is a unique facility number from [0, potentialFacs-1]', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+  const n = new NDPSO();
+  n.problem = new SimpleFacilityProblem();
   // since the position is randomized, we should repeat the test several times to make sure passing isn't a fluke
   for (let test = 0; test < 5; test++) {
     const p = n.getRandomPosition();
@@ -35,26 +35,29 @@ test('getRandomPosition() returns an array with problem.numFacilities members ea
 });
 
 test('createParticle() initializes particle to random position, calcs fitness, and sets personal best', function(t) {
+    const n = new NDPSO();
     const problem = new SimpleFacilityProblem();
-    const n = new NDPSO(problem);
+    n.problem = problem;
     const p = n.createParticle();
     // make sure p.position is a random array?
     t.equal(p.position.length, problem.numFacilities);
-    t.equal(p.fitness, problem.calcFitness(p.position));
+    t.equal(p.fitness, problem.calcObjectiveFromFacilities(p.position));
     t.equal(p.pBestPos, p.position);
     t.equal(p.pBestFit, p.fitness);
     t.end();
 });
 
 test('can initialize swarm', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+  const n = new NDPSO();
+  n.problem = new SimpleFacilityProblem();
   n.initSwarm();
   t.equal(n.swarm.length, n.swarmSize);
   t.end();
 });
 
 test('initSwarm() clears out this.swarm before adding new Particles', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+  const n = new NDPSO();
+  n.problem = new SimpleFacilityProblem();
   n.swarm = ['test!', 'not a real particle'];
   t.notEqual(n.swarm.length, n.swarmSize);
   n.initSwarm();
@@ -63,7 +66,8 @@ test('initSwarm() clears out this.swarm before adding new Particles', function(t
 });
 
 test('getGlobalBest() returns particle with lowest fitness in swarm', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+  const n = new NDPSO();
+  n.problem = new SimpleFacilityProblem();
   n.swarm = [
     {fitness: 1, id: 1},
     {fitness: 2, id: 2}
@@ -74,7 +78,8 @@ test('getGlobalBest() returns particle with lowest fitness in swarm', function(t
 });
 
 test('updateSwarm() accepts globalBest, calls particle.update(globalBest) for each particle in the swarm, and returns new globalBest', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+  const n = new NDPSO();
+  n.problem = new SimpleFacilityProblem();
   const p1 = {update: sinon.spy(), fitness: 1};
   const p2 = {update: sinon.spy(), fitness: 2};
   const p3 = {update: sinon.spy(), fitness: 3};
@@ -89,12 +94,12 @@ test('updateSwarm() accepts globalBest, calls particle.update(globalBest) for ea
 });
 
 test('optimize() calls initSwarm and updates the swarm maxIterations times', function(t) {
-  const n = new NDPSO(new SimpleFacilityProblem());
+  const n = new NDPSO();
   const initSwarm = sinon.spy(n, 'initSwarm');
   const updateSwarm = sinon.spy(n, 'updateSwarm');
 
   n.maxIterations = 100;
-  n.optimize();
+  n.optimize(new SimpleFacilityProblem());
 
   t.true(initSwarm.calledOnce);
   t.true(updateSwarm.callCount, n.maxIterations);
@@ -102,7 +107,8 @@ test('optimize() calls initSwarm and updates the swarm maxIterations times', fun
 });
 
 test('mutatePosition() returns a copy of the passed-in position if the mutate doesnt fire', function(t) {
-    const n = new NDPSO(new SimpleFacilityProblem());
+    const n = new NDPSO();
+    n.problem = new SimpleFacilityProblem();
 
     const oldPos = [1,2,3];
     const newPos = n.mutatePosition(oldPos, 0);
@@ -113,7 +119,8 @@ test('mutatePosition() returns a copy of the passed-in position if the mutate do
 });
 
 test('mutatePosition() returns a copy of the position with a single facility changed if it fires', function(t) {
-    const n = new NDPSO(new SimpleFacilityProblem());
+    const n = new NDPSO();
+    n.problem = new SimpleFacilityProblem();
 
     const oldPos = [1,2,3];
     const newPos = n.mutatePosition(oldPos, 1);
@@ -132,7 +139,8 @@ test('mutatePosition() returns a copy of the position with a single facility cha
 });
 
 test('particle.update() calls mutatePosition with the appropriate position/parameter combinations', function(t) {
-    const n = new NDPSO(new SimpleFacilityProblem());
+    const n = new NDPSO();
+    n.problem = new SimpleFacilityProblem();
     const gBest = n.createParticle();
     const p = n.createParticle();
     const oldPos = p.position;
@@ -150,7 +158,7 @@ test('particle.update() calls mutatePosition with the appropriate position/param
 
     // new position = best(s1, s2, s3)
     let positions = mutatePosition.returnValues;
-    let fitnesses = positions.map(p => n.problem.calcFitness(p));
+    let fitnesses = positions.map(p => n.problem.calcObjectiveFromFacilities(p));
     let bestFit = n.problem.getBestFitness(fitnesses);
     // have to find lastIndexOf because of how updateParticle() chooses
     // among positions with the same fitness (last calculated has priority)

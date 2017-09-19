@@ -1,21 +1,15 @@
 class NDPSO {
-  // set inertia(i) { 
-  //     this.params.inertia = i;
-  //     this.params.currentInertia = i;
-  // }
-
-  constructor(problem) {
+  constructor() {
     this.social = 0.7;
     this.cognitive = 0.7;
     this.inertia = 0.7;
-    this.inertialDiscount = 0.9995;
     this.swarmSize = 100;
     this.maxIterations = 1000;
     this.swarm = [];
-    this.problem = problem;
   }
   
-  optimize() {
+  optimize(problem) {
+    this.problem = problem;
     this.initSwarm();
     let uBest, gBest;
     uBest = gBest = this.getGlobalBest();
@@ -44,10 +38,9 @@ class NDPSO {
 
   createParticle() {
     const p = {position: this.getRandomPosition()};
-    p.fitness = this.problem.calcFitness(p.position);
+    p.fitness = this.problem.calcObjectiveFromFacilities(p.position);
     p.pBestPos = p.position;
     p.pBestFit = p.fitness;
-    const dpso = this;
     p.update = this.updateParticle.bind(this, p);
     return p;
   }
@@ -106,7 +99,7 @@ class NDPSO {
     // but worth noting anyway
     const potential = toMutate.reduce((obj, arr) => {
       let pos = this.mutatePosition(arr[0], arr[1]);
-      let fit = this.problem.calcFitness(pos);
+      let fit = this.problem.calcObjectiveFromFacilities(pos);
       obj[fit] = pos;
       return obj;
     }, {});

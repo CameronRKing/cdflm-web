@@ -38,10 +38,10 @@ test('assigns customer to closest facility and return [facility, cost]', functio
     t.end();
 });
 
-test('can calculate stars for given facility vector and cost matrix', function(t) {
+test('can calculate stars for given assignment vector and cost matrix', function(t) {
     const p = new SimpleFacilityProblem();
     p.costs = SIMPLE_COST_MATRIX;
-    let stars = p._calcStars([0, 4]);
+    let stars = p._calcStars([0, 0, 0, 4, 4]);
     t.looseEqual(stars, {
         0: 3,
         4: 1
@@ -52,7 +52,7 @@ test('can calculate stars for given facility vector and cost matrix', function(t
 test('can calculate fitness for a given facility vector for a minimize max star problem', function(t) {
     const p = new SimpleFacilityProblem();
     p.costs = SIMPLE_COST_MATRIX;
-    const fitness = p.calcFitness([0,4]);
+    const fitness = p.calcObjectiveFromFacilities([0,4]);
     t.equal(fitness, 3);
     t.end();
 });
