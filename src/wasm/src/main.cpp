@@ -16,7 +16,7 @@ int main() {
     ndpso = new NDPSO();
 
     try {
-        ProblemData data = Utils::getData("../storage/testCases/Daskin/city1990.grt");
+        ProblemData data = Utils::getData("../problems/Daskin/city1990.grt");
         ProblemResults results = ndpso->optimize(data);
         cout << results.time << endl;
     } catch (const std::exception &e) {

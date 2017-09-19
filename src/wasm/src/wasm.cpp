@@ -40,16 +40,16 @@ public:
 
 build command (until I get the EMSDK in the Docker container and thus can add an entry to the makefile; run from Default directory):
 
-emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -O3 --std=c++11 --preload-file ../storage/testCases -o cdflm.js ../src/wasm.cpp
+emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -O3 --std=c++11 --preload-file ../problems -o cdflm.js ../src/wasm.cpp
 
 */
 
 ProblemData getORLIBData(int num) {
-    return Utils::getData("../storage/testCases/ORLIB/pmed" + to_string(num) + ".txt");
+    return Utils::getData("../problems/ORLIB/pmed" + to_string(num) + ".txt");
 }
 
 ProblemData getDaskinData() {
-    return Utils::getData("../storage/testCases/Daskin/city1990.grt");
+    return Utils::getData("../problems/Daskin/city1990.grt");
 }
 
 EMSCRIPTEN_BINDINGS(cdflm_cpp) {
@@ -72,7 +72,6 @@ EMSCRIPTEN_BINDINGS(cdflm_cpp) {
         .value("MAXIMIZE", MAXIMIZE)
         .value("MINIMIZE", MINIMIZE);
 
-    class_<ProblemData>("ProblemData");
     value_object<ProblemData>("ProblemData")
         .field("name", &ProblemData::name)
         .field("type", &ProblemData::type)
