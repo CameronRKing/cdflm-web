@@ -5,7 +5,6 @@
 #include <vector>
 #include <cstdlib>
 #include "NDPSO.h"
-#include "Logger.h"
 #include "ALNSSolution.h"
 #include "alns-functions.h"
 using namespace std;
@@ -42,7 +41,7 @@ ALNS::ALNS() {
  * Destructor to clean out dynamically allocated memory in destroyFuncs and repairFuncs
  * 
  * @postconditions: promises to delete all repair and destroy functions.
- *                  Does NOT delete the Logger! That is the responsibility of the main program!
+ *                  Does NOT delete the Listener! That is the responsibility of the main program!
  **/
 ALNS::~ALNS() {
     for (auto &pair : this->destroyFuncs) {
@@ -108,11 +107,8 @@ void ALNS::resetFuncFitnesses() {
  **/
 ALNSSolution ALNS::generateInitialSolution() {
     NDPSO* ndpso = new NDPSO(10);
-    Logger* placeholder = new Logger(false);
-    ndpso->setLogger(placeholder);
     ProblemResults results = ndpso->optimize(this->data);
     delete ndpso;
-    delete placeholder;
     ALNSSolution solution { this->data, results.objective, results.facilities, results.customerAssignments, 0};
     return solution;
 
@@ -177,9 +173,9 @@ void ALNS::gridSearch(float lower, float upper, float step, void (ALNS::*setter)
         cout << "param: " << param << endl;
         for (int i = 0; i < 5; i++) {
             cout << "    running " << i << endl;
-            this->logger->logAlgorithm(this, this->data.name, this->data.type, this->data.objType);
+            this->listener->handleAlgorithm(this, this->data.name, this->data.type, this->data.objType);
             ProblemResults results = this->optimize(this->data);
-            this->logger->logResults(results);
+            this->listener->handleResults(results);
             sumObjectives += results.objective;
         }
         avgObjectives[param] = sumObjectives / 5.0;

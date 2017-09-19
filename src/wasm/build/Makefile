@@ -3,11 +3,12 @@ all : CPP 	 = g++
 all : OPENMP = -fopenmp
 all : ARCH   = 
 all : LIBS   = -lm -lgomp -lrt -ldl -lsqlite3
-all : CFLAGS = -O2 -c -g -fmessage-length=0  -std=c++11 -Wunused-variable
+all : CFLAGS = -O3 -c -g -fmessage-length=0  -std=c++11 -Wunused-variable
 all : TARGET = "CDFLM"
 
 SUBDIRS  := $(wildcard ../) $(wildcard ../*/)
 CPP_SRCS := $(wildcard ../*/*.cpp) $(wildcard ../*/*/*.cpp) 
+CPP_SRCS := $(filter-out ../src/wasm.cpp, $(CPP_SRCS))
 C_SRCS   := $(wildcard ../*/*.c) $(wildcard ../*/*/*.c)
 OBJS     := $(patsubst ../%.cpp, ./%.o, $(CPP_SRCS)) $(patsubst ../include/sqlite/%.c, ./include/sqlite/%.o, $(C_SRCS))
 CPP_DEPS := $(patsubst ../%.cpp, ./%.d, $(CPP_SRCS))

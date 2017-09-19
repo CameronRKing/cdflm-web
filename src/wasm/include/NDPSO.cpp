@@ -146,7 +146,9 @@ ProblemResults NDPSO::optimize(ProblemData data) {
             uBest = gBest;
         }
 
-        listener->handleParticle(&uBest, count);
+        if (this->listener != nullptr) {
+            listener->handleParticle(&uBest, count);
+        }
     }
 
     ProblemResults results {
