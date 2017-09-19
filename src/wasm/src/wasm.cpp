@@ -2,9 +2,8 @@
 #include "../include/Algorithm.h"
 #include "../include/ProblemData.h"
 #include "../include/ProblemResults.h"
-// Even though I never directly reference the next three classes,
+// Even though I never directly reference the next class,
 // the EMSDK wants them explicitly bound or else it throws a fit during runtime
-#include "../include/ObjectiveStrategy.cpp"
 #include "../include/Particle.cpp"
 #include "../include/Listener.h"
 #include "../include/NDPSO.cpp"
@@ -73,6 +72,7 @@ EMSCRIPTEN_BINDINGS(cdflm_cpp) {
         .value("MAXIMIZE", MAXIMIZE)
         .value("MINIMIZE", MINIMIZE);
 
+    class_<ProblemData>("ProblemData");
     value_object<ProblemData>("ProblemData")
         .field("name", &ProblemData::name)
         .field("type", &ProblemData::type)
@@ -92,9 +92,6 @@ EMSCRIPTEN_BINDINGS(cdflm_cpp) {
 
     emscripten::function("getORLIBData", &getORLIBData);
     emscripten::function("getDaskinData", &getDaskinData);
-
-    class_<ObjectiveStrategy>("ObjectiveStrategy")
-        .class_function("calcObjective", &ObjectiveStrategy::calcObjective);
 
     class_<Listener>("Listener")
         .function("handleAlgorithm", &Listener::handleAlgorithm, pure_virtual(), allow_raw_pointers())

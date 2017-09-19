@@ -4,7 +4,6 @@
 #include <vector>
 #include "Comparator.h"
 #include "ProblemData.h"
-#include "ObjectiveStrategy.h"
 using namespace std;
 
 
@@ -147,5 +146,5 @@ map<int, int> ALNSSolution::getRays() {
  **/
 void ALNSSolution::update() {
     this->customerAssignments = this->data.assignCustomers(this->facilities);
-    this->objective = ObjectiveStrategy::calcObjective(this->data.costs, this->customerAssignments, this->data.type);
+    this->objective = this->data.calcObjective(this->customerAssignments);
 }

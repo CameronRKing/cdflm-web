@@ -9,7 +9,6 @@
 #include <algorithm>
 #include "Utils.h"
 #include "Particle.h"
-#include "ObjectiveStrategy.h"
 using namespace std;
 
 /* functional object for getGlobalBest() && getGlobalWorst() */
@@ -156,7 +155,7 @@ Particle NDPSO::getGlobalBest() {
  **/
 int NDPSO::calcObjective(const vector<int>& facilities) {
     vector<int> customerAssignments = this->data.assignCustomers(facilities);
-    return ObjectiveStrategy::calcObjective(this->data.costs, customerAssignments, this->data.type);
+    return this->data.calcObjective(customerAssignments);
 }
 
 /**

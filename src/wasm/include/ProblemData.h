@@ -2,8 +2,10 @@
 #define PROBLEMDATA_H
 
 #include "defs.h"
+#include <map>
 #include <vector>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 // structure for holding data about the problem
@@ -15,6 +17,114 @@ struct ProblemData {
     int numCustomers;
     vector<vector<int>> costs;
     vector<vector<int>> demand;
+
+    /**
+     * Conditional logic for calculating appropriate objective
+     * based on problem type.
+     *
+     * @param const vector<vector<int>> costs,
+     * @param const vector<int> customerAssignments,
+     * @param const ProblemType problemType)
+     * @return int objective
+     **/
+    int calcObjective(const vector<int> assignments) {
+        map<int, int> measures = this->getMeasures(assignments);
+        return this->getAggregate(measures);
+    }
+
+    map<int, int> getMeasures(const vector<int> assignments) {
+        switch (this->type) {
+            case MAX_STAR:
+            case MIN_STAR:
+            case SUM_STAR:
+                return this->calcStars(assignments);
+            case MAX_RADIUS:
+            case MIN_RADIUS:
+            case SUM_RADIUS:
+                return this->calcRadii(assignments);
+            case MAX_RAY:
+            case MIN_RAY:
+            case SUM_RAY:
+                return this->calcRays(assignments);
+            default:
+                throw "Unsupported problem type!";
+        }
+    }
+
+    int getAggregate(const map<int, int> measures) {
+        switch (this->type) {
+            case MAX_STAR:
+            case MAX_RADIUS:
+            case MAX_RAY:
+                return this->getMax(measures);
+            case MIN_STAR:
+            case MIN_RADIUS:
+            case MIN_RAY:
+                return this->getMin(measures);
+            case SUM_STAR:
+            case SUM_RADIUS:
+            case SUM_RAY:
+                return this->getSum(measures);
+            default:
+                throw "Unsupported problem type!";
+        }
+    }
+
+    map<int, int> calcStars(const vector<int> assignments) {
+        map<int, int> stars;
+        for (int cust = 0; cust < assignments.size(); cust++) {
+            int fac = assignments[cust];
+            if (stars.count(fac) == 0) {
+                stars[fac] = 0;
+            }
+            stars[fac] += this->costs[cust][fac];
+        }
+        return stars;
+    }
+
+    map<int, int> calcRadii(const vector<int> assignments) {
+        map<int, int> radii;
+        for (int cust = 0; cust < assignments.size(); cust++) {
+            int fac = assignments[cust];
+            if (radii.count(fac) == 0 || costs[cust][fac] > radii[fac]) {
+                radii[fac] = this->costs[cust][fac];
+            }
+        }
+        return radii;
+    }
+
+    map<int, int> calcRays(const vector<int> assignments) {
+        map<int, int> rays;
+        for (int cust = 0; cust < assignments.size(); cust++) {
+            int fac = assignments[cust];
+            if (rays.count(fac) == 0 || costs[cust][fac] < rays[fac]) {
+                rays[fac] = costs[cust][fac];
+            }
+        }
+        return rays;
+    }
+
+    int getMax(const map<int, int> measures) {
+        return max_element(measures.begin(), measures.end(),
+            [](pair<int, int> left, pair<int, int> right) { 
+                return left.second < right.second; 
+            })->second;
+    }
+
+    int getMin(const map<int, int> measures) {
+        return min_element(measures.begin(), measures.end(),
+            [](pair<int, int> left, pair<int, int> right) { 
+                return left.second < right.second; 
+            })->second;
+    }
+
+    int getSum(const map<int, int> measures) {
+        int sum = 0;
+        for (auto pair : measures) {
+            sum += pair.second;
+        }
+        return sum;
+    }
 
     /**
      * Assigns customers to their closest facility
@@ -39,6 +149,8 @@ struct ProblemData {
         }
         return customerAssignments;
     }
+
+
 };
 
 #endif

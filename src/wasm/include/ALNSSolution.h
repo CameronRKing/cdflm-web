@@ -5,7 +5,6 @@
 #include <vector>
 #include <algorithm>
 #include "ProblemData.h"
-#include "ObjectiveStrategy.h"
 using namespace std;
 
 class ALNSSolution {
